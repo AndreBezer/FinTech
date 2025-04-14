@@ -26,21 +26,29 @@ TelaDashboard.pack(pady=25, padx=25, side="left")
 BotaoAdicionar = ctk.CTkButton(FrameSuperior, text="+", command=lambda: TelaAdicionar(app), width=50,height=50, corner_radius=25, font=("Arial", 20))
 BotaoAdicionar.pack(pady=10, padx=25, side="right")
 
-# segundo frame
-FrameInferior = ctk.CTkFrame(app)
-FrameInferior.pack(fill="x", pady=10)
+# Frame para o histórico
+FrameHistorico = ctk.CTkScrollableFrame(app)
+FrameHistorico.pack(fill="both", expand=True, padx=10, pady=10)
 
-LabelCategoria = ctk.CTkLabel(FrameInferior, text=f"Categoria: {dados.categoria}")
-LabelCategoria.pack(pady=25)
+def atualizar_historico():
+    # Limpa o frame antes de atualizar
+    for widget in FrameHistorico.winfo_children():
+        widget.destroy()
+    
+    # Adiciona cada entrada do histórico
+    for idx, (categoria, valor) in enumerate(dados.historico, 1):
+        entrada_frame = ctk.CTkFrame(FrameHistorico)
+        entrada_frame.pack(fill="x", pady=5, padx=5)
+        
+        ctk.CTkLabel(entrada_frame, text=f"Entrada {idx}:").pack(side="left", padx=5)
+        ctk.CTkLabel(entrada_frame, text=f"Categoria: {categoria}").pack(side="left", padx=5)
+        ctk.CTkLabel(entrada_frame, text=f"Valor: R$ {valor:.2f}").pack(side="left", padx=5)
+    
+    # Agenda a próxima atualização
+    app.after(1000, atualizar_historico)
 
-LabelValor = ctk.CTkLabel(FrameInferior, text=f"Valor: R$: {dados.valor}")
-LabelValor.pack(pady=25)
-
-def atualizar_labels():
-    LabelCategoria.configure(text=f"Categoria: {dados.categoria}")
-    LabelValor.configure(text=f"Valor: R$ {dados.valor}")
-    app.after(100, atualizar_labels)
-atualizar_labels()
+# Inicia a atualização do histórico
+atualizar_historico()
 
 # Iniciar o app
 app.mainloop()
